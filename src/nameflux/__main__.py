@@ -42,7 +42,7 @@ from docopt import docopt
 def main():
     """Main Method"""
     global arguments
-    arguments = docopt(__doc__, version="nameflux 2.1.1")
+    arguments = docopt(__doc__, version="nameflux 2.1.2")
 
     if arguments["--test"]:
         arguments["--verbose"] = True
