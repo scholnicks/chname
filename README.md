@@ -1,10 +1,10 @@
-# nameflux
+# nomix
 
-nameflux renames files in powerful ways.
+nomix renames files in powerful ways.
 
 ```
 Usage:
-    nameflux [options] [<files>...]
+    nomix [options] [<files>...]
 
 Options:
     -a, --append=<suffix>                      Suffix to be appended
@@ -30,9 +30,9 @@ Options:
 ## Installation
 
 ```bash
-pip install nameflux
+pip install nomix
 ```
 
 ## License
 
-nameflux is freeware released under the [MIT License](https://github.com/scholnicks/nameflux/blob/main/LICENSE).
+nomix is freeware released under the [MIT License](https://github.com/scholnicks/nomix/blob/main/LICENSE).
