@@ -1,6 +1,6 @@
 [project]
 name = "nameflux"
-version = "2.1.0"
+version = "2.1.1"
 description = "Renames files in powerful ways"
 authors = [
     {name = "Steve Scholnick",email = "scholnicks@gmail.com"}

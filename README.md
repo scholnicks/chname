@@ -1,5 +1,4 @@
-nameflux
-======
+# nameflux
 
 nameflux renames files in powerful ways.
 
@@ -28,5 +27,12 @@ Options:
     --version                                  Prints the version
 ```
 
+## Installation
+
+```bash
+pip install nameflux
+```
+
+## License
 
 nameflux is freeware released under the [MIT License](https://github.com/scholnicks/nameflux/blob/main/LICENSE).

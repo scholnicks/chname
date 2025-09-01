@@ -18,13 +18,13 @@ Options:
     -h, --help                                 Show this help screen
     -l, --lower                                Translates the filenames to lowercase
     --merge                                    Merges the files in order specfied on command line
-    -o, --order                                Take any input files and renames them in numerical order
+    -o, --order                                Take any input files and fluxes them in numerical order
     -p, --prepend=<prefix>                     Prefix to be prepended
     --random                                   Randomizes the files
     -r, --remove=<pattern>                     Pattern to be removed, can be a regex
     -q, --quiet                                Quiet mode
     -s, --substitute=<substitution pattern>    Substitutes a pattern (old/new, old can be a regex)
-    -t, --test                                 Test mode (Just prints the rename operations)
+    -t, --test                                 Test mode (Just prints the operations)
     --titles=<input file with titles>          Rename the files by names in the specified input file
     --usage                                    Detailed usage information
     -v, --verbose                              Verbose mode
@@ -42,15 +42,15 @@ from docopt import docopt
 def main():
     """Main Method"""
     global arguments
-    arguments = docopt(__doc__, version="rename 2.1.0")
+    arguments = docopt(__doc__, version="nameflux 2.1.1")
 
     if arguments["--test"]:
         arguments["--verbose"] = True
 
-    rename(arguments["<files>"])
+    flux(arguments["<files>"])
 
 
-def rename(files):
+def flux(files):
     """Renames the specified files"""
 
     if arguments["--usage"] or not files:
@@ -210,7 +210,7 @@ def substitute(fileName, pattern):
         (old, new) = re.match(r"^(.*)/(.*)$", pattern).groups()
         return re.sub(old, new, fileName)
     except AttributeError:
-        raise SystemExit("rename: Illegal substitute pattern. Pattern must be old/new")
+        raise SystemExit("nameflux: Illegal substitute pattern. Pattern must be old/new")
 
 
 def fixNumbers(fileName, delimiter, numberLength):
@@ -238,7 +238,7 @@ Merge
 -----
 To merge files from two different directories into the current directory:
 
-rename --merge d1/* d2/*
+nameflux --merge d1/* d2/*
 
 Input Files: d1/file1.txt d1/file2.txt d2/file1.txt
 Results: ./file_0001.txt ./file_0002.txt ./file_0003.txt
@@ -254,7 +254,7 @@ Order
 
 Adds a numerical prefix to sorted input files. Example:
 
-rename --order filea.mp3 fileb.mp3
+nameflux --order filea.mp3 fileb.mp3
 
 becomes:
 
