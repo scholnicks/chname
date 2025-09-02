@@ -2,13 +2,13 @@
 # vi: set syntax=python ts=4 sw=4 sts=4 et ff=unix ai si :
 #
 # (c) Steven Scholnick <scholnicks@gmail.com>
-# The nomix source code is published under a MIT license.
+# The chname source code is published under a MIT license.
 
 """
-nomix: Renames files in powerful ways
+chname: Renames files in powerful ways
 
 Usage:
-    nomix [options] [<files>...]
+    chname [options] [<files>...]
 
 Options:
     -a, --append=<suffix>                      Suffix to be appended
@@ -42,7 +42,7 @@ from docopt import docopt
 def main():
     """Main Method"""
     global arguments
-    arguments = docopt(__doc__, version="nomix 2.1.3")
+    arguments = docopt(__doc__, version="chname 2.1.4")
 
     if arguments["--test"]:
         arguments["--verbose"] = True
@@ -210,7 +210,7 @@ def substitute(fileName, pattern):
         (old, new) = re.match(r"^(.*)/(.*)$", pattern).groups()
         return re.sub(old, new, fileName)
     except AttributeError:
-        raise SystemExit("nomix: Illegal substitute pattern. Pattern must be old/new")
+        raise SystemExit("chname: Illegal substitute pattern. Pattern must be old/new")
 
 
 def fixNumbers(fileName, delimiter, numberLength):
@@ -238,7 +238,7 @@ Merge
 -----
 To merge files from two different directories into the current directory:
 
-nomix --merge d1/* d2/*
+chname --merge d1/* d2/*
 
 Input Files: d1/file1.txt d1/file2.txt d2/file1.txt
 Results: ./file_0001.txt ./file_0002.txt ./file_0003.txt
@@ -254,7 +254,7 @@ Order
 
 Adds a numerical prefix to sorted input files. Example:
 
-nomix --order filea.mp3 fileb.mp3
+chname --order filea.mp3 fileb.mp3
 
 becomes:
 

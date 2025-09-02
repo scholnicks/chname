@@ -1,10 +1,10 @@
-# nomix
+# chname
 
-nomix renames files in powerful ways.
+chname renames files in powerful ways.
 
 ```
 Usage:
-    nomix [options] [<files>...]
+    chname [options] [<files>...]
 
 Options:
     -a, --append=<suffix>                      Suffix to be appended
@@ -30,9 +30,9 @@ Options:
 ## Installation
 
 ```bash
-pip install nomix
+pip install chname
 ```
 
 ## License
 
-nomix is freeware released under the [MIT License](https://github.com/scholnicks/nomix/blob/main/LICENSE).
+chname is freeware released under the [MIT License](https://github.com/scholnicks/chname/blob/main/LICENSE).
