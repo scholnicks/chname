@@ -17,7 +17,7 @@ Options:
     -f, --fix=<maximum number of digits>       Fixes numerical file names
     -h, --help                                 Show this help screen
     -l, --lower                                Translates the filenames to lowercase
-    --merge                                    Merges the files in order specfied on command line
+    --merge                                    Merges the files in order specified on command line
     -o, --order                                Take any input files and fluxes them in numerical order
     -p, --prepend=<prefix>                     Prefix to be prepended
     --random                                   Randomizes the files
@@ -38,11 +38,12 @@ import sys
 
 from docopt import docopt
 
+arguments = {}
 
 def main():
     """Main Method"""
     global arguments
-    arguments = docopt(__doc__, version="chname 2.1.4")
+    arguments = docopt(__doc__, version="chname 2.1.5")
 
     if arguments["--test"]:
         arguments["--verbose"] = True
