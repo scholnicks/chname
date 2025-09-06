@@ -38,9 +38,9 @@ import sys
 
 from docopt import docopt
 
-arguments = {}
+arguments: dict = {}
 
-def main():
+def main() -> None:
     """Main Method"""
     global arguments
     arguments = docopt(__doc__, version="chname 2.1.5")
@@ -51,7 +51,7 @@ def main():
     flux(arguments["<files>"])
 
 
-def flux(files):
+def flux(files: list[str]) -> None:
     """Renames the specified files"""
 
     if arguments["--usage"] or not files:
@@ -76,9 +76,9 @@ def flux(files):
     sys.exit(0)
 
 
-def nameFilesByInputFile(files):
+def nameFilesByInputFile(files) -> None:
     """Names files by using an input text file"""
-    extension = calculateExtension(files)
+    extension: str = calculateExtension(files)
 
     with open(arguments["--titles"], "r") as fp:
         exportFileNames = [line.strip() for line in fp if line.strip()]
@@ -90,12 +90,12 @@ def nameFilesByInputFile(files):
             )
         )
 
-    filenameTemplate = (
+    filenameTemplate: str = (
         r"{num:02d} - {filename}{extension}" if len(files) < 100 else r"{num:04d} - {filename}{extension}"
     )
-    index = 1
+    index: int = 1
     for currentFilePath, newFileName in zip(files, exportFileNames):
-        newFilePath = os.path.join(
+        newFilePath: str = os.path.join(
             os.path.dirname(currentFilePath),
             filenameTemplate.format(num=index, filename=newFileName, extension=extension),
         )
@@ -103,48 +103,48 @@ def nameFilesByInputFile(files):
         index += 1
 
 
-def orderFiles(files):
+def orderFiles(files) -> None:
     """Orders the files"""
-    filenameTemplate = r"{num:02d} - {filename}" if len(files) < 100 else r"{num:04d} - {filename}"
+    filenameTemplate: str = r"{num:02d} - {filename}" if len(files) < 100 else r"{num:04d} - {filename}"
 
     for index, currentFilePath in enumerate(sorted(files), 1):
-        newFilePath = os.path.join(
+        newFilePath: str = os.path.join(
             os.path.dirname(currentFilePath),
             filenameTemplate.format(num=index, filename=os.path.basename(currentFilePath)),
         )
         rename_file(currentFilePath, newFilePath)
 
 
-def randomizeFiles(files):
+def randomizeFiles(files) -> None:
     """randomly shuffles a list of files with the same extension"""
 
     # determine the extension
-    extension = calculateExtension(files)
+    extension: str = calculateExtension(files)
 
     # do the shuffle
     random.shuffle(files)
 
-    prefix = arguments["--prepend"] if arguments["--prepend"] else "file"
+    prefix: str = arguments["--prepend"] if arguments["--prepend"] else "file"
 
     # rename the files in numeric order
     for index, filename in enumerate(files, 1):
-        new_file_name = os.path.join(
+        new_file_name: str = os.path.join(
             os.path.dirname(filename),
             "{prefix}_{num:04d}{extension}".format(prefix=prefix, num=index, extension=extension),
         )
         rename_file(filename, new_file_name)
 
 
-def mergeFiles(files):
+def mergeFiles(files) -> None:
     """reorders a set of files in order in a target directory"""
 
     if not arguments["--directory"]:
         raise SystemExit("--directory must be set")
 
     # determine the extension
-    extension = calculateExtension(files)
+    extension: str = calculateExtension(files)
 
-    prefix = arguments["--prepend"] if arguments["--prepend"] else "file"
+    prefix: str = arguments["--prepend"] if arguments["--prepend"] else "file"
 
     # rename the files in argument specified order
     for index, filename in enumerate(files, 1):
@@ -154,23 +154,23 @@ def mergeFiles(files):
         rename_file(filename, new_file_name)
 
 
-def calculateExtension(files):
+def calculateExtension(files) -> str:
     """determines a single extension"""
-    extensions = set((os.path.splitext(f)[1].lower() for f in files))
+    extensions: set[str] = set((os.path.splitext(f)[1].lower() for f in files))
     if len(extensions) > 1:
         raise SystemExit("Only one extension allowed. Found: {}".format(", ".join(extensions)))
 
     return extensions.pop()
 
 
-def performRenameOperation(fileName):
+def performRenameOperation(fileName) -> None:
     """Performs a renaming operation on the specified filename"""
     if not os.path.exists(fileName):
         if not arguments["--quiet"]:
             print("{} does not exist, skipping.".format(fileName), file=sys.stderr)
         return
 
-    newFileName = fileName
+    newFileName: str = fileName
 
     if arguments["--lower"]:
         newFileName = newFileName.lower()
@@ -196,7 +196,7 @@ def performRenameOperation(fileName):
         rename_file(fileName, newFileName)
 
 
-def rename_file(oldName, newName):
+def rename_file(oldName, newName) -> None:
     """Performs the actual file rename"""
     if arguments["--verbose"]:
         print("Renaming {} to {}".format(oldName, newName))
@@ -205,7 +205,7 @@ def rename_file(oldName, newName):
         os.rename(oldName, newName)
 
 
-def substitute(fileName, pattern):
+def substitute(fileName, pattern) -> str:
     """Performs the pattern substitution"""
     try:
         (old, new) = re.match(r"^(.*)/(.*)$", pattern).groups()
@@ -214,7 +214,7 @@ def substitute(fileName, pattern):
         raise SystemExit("chname: Illegal substitute pattern. Pattern must be old/new")
 
 
-def fixNumbers(fileName, delimiter, numberLength):
+def fixNumbers(fileName, delimiter, numberLength) -> str:
     """Fixes the numeric part of a filename"""
     if delimiter not in fileName:
         return fileName
@@ -222,7 +222,7 @@ def fixNumbers(fileName, delimiter, numberLength):
     (base, extension) = os.path.splitext(fileName)
     (prefix, number) = base.split(delimiter, 2)
 
-    sequenceValue = number
+    sequenceValue: str = number
 
     for i in range(len(number), int(numberLength)):
         sequenceValue = "0" + sequenceValue
@@ -230,7 +230,7 @@ def fixNumbers(fileName, delimiter, numberLength):
     return prefix + delimiter + sequenceValue + extension
 
 
-def usage():
+def usage() -> None:
     print(
         __doc__
         + """
