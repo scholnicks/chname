@@ -40,10 +40,11 @@ from docopt import docopt
 
 arguments: dict = {}
 
+
 def main() -> None:
     """Main Method"""
     global arguments
-    arguments = docopt(__doc__, version="chname 2.1.5")
+    arguments = docopt(__doc__, version="chname 2.1.6")
 
     if arguments["--test"]:
         arguments["--verbose"] = True
