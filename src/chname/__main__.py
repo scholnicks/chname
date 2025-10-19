@@ -49,10 +49,10 @@ def main() -> None:
     if arguments["--test"]:
         arguments["--verbose"] = True
 
-    flux(arguments["<files>"])
+    renameFiles(arguments["<files>"])
 
 
-def flux(files: list[str]) -> None:
+def renameFiles(files: list[str]) -> None:
     """Renames the specified files"""
 
     if arguments["--usage"] or not files:
