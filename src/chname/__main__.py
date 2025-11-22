@@ -38,7 +38,7 @@ import sys
 
 from docopt import docopt
 
-arguments: dict = {}
+arguments = {}
 
 
 def main() -> None:
@@ -79,7 +79,7 @@ def renameFiles(files: list[str]) -> None:
 
 def nameFilesByInputFile(files) -> None:
     """Names files by using an input text file"""
-    extension: str = calculateExtension(files)
+    extension = calculateExtension(files)
 
     with open(arguments["--titles"], "r") as fp:
         exportFileNames = [line.strip() for line in fp if line.strip()]
@@ -91,12 +91,12 @@ def nameFilesByInputFile(files) -> None:
             )
         )
 
-    filenameTemplate: str = (
+    filenameTemplate = (
         r"{num:02d} - {filename}{extension}" if len(files) < 100 else r"{num:04d} - {filename}{extension}"
     )
     index: int = 1
     for currentFilePath, newFileName in zip(files, exportFileNames):
-        newFilePath: str = os.path.join(
+        newFilePath = os.path.join(
             os.path.dirname(currentFilePath),
             filenameTemplate.format(num=index, filename=newFileName, extension=extension),
         )
@@ -106,10 +106,10 @@ def nameFilesByInputFile(files) -> None:
 
 def orderFiles(files) -> None:
     """Orders the files"""
-    filenameTemplate: str = r"{num:02d} - {filename}" if len(files) < 100 else r"{num:04d} - {filename}"
+    filenameTemplate = r"{num:02d} - {filename}" if len(files) < 100 else r"{num:04d} - {filename}"
 
     for index, currentFilePath in enumerate(sorted(files), 1):
-        newFilePath: str = os.path.join(
+        newFilePath = os.path.join(
             os.path.dirname(currentFilePath),
             filenameTemplate.format(num=index, filename=os.path.basename(currentFilePath)),
         )
@@ -120,16 +120,16 @@ def randomizeFiles(files) -> None:
     """randomly shuffles a list of files with the same extension"""
 
     # determine the extension
-    extension: str = calculateExtension(files)
+    extension = calculateExtension(files)
 
     # do the shuffle
     random.shuffle(files)
 
-    prefix: str = arguments["--prepend"] if arguments["--prepend"] else "file"
+    prefix = arguments["--prepend"] if arguments["--prepend"] else "file"
 
     # rename the files in numeric order
     for index, filename in enumerate(files, 1):
-        new_file_name: str = os.path.join(
+        new_file_name = os.path.join(
             os.path.dirname(filename),
             "{prefix}_{num:04d}{extension}".format(prefix=prefix, num=index, extension=extension),
         )
@@ -143,9 +143,9 @@ def mergeFiles(files) -> None:
         raise SystemExit("--directory must be set")
 
     # determine the extension
-    extension: str = calculateExtension(files)
+    extension = calculateExtension(files)
 
-    prefix: str = arguments["--prepend"] if arguments["--prepend"] else "file"
+    prefix = arguments["--prepend"] if arguments["--prepend"] else "file"
 
     # rename the files in argument specified order
     for index, filename in enumerate(files, 1):
@@ -171,7 +171,7 @@ def performRenameOperation(fileName) -> None:
             print("{} does not exist, skipping.".format(fileName), file=sys.stderr)
         return
 
-    newFileName: str = fileName
+    newFileName = fileName
 
     if arguments["--lower"]:
         newFileName = newFileName.lower()
@@ -223,7 +223,7 @@ def fixNumbers(fileName, delimiter, numberLength) -> str:
     (base, extension) = os.path.splitext(fileName)
     (prefix, number) = base.split(delimiter, 2)
 
-    sequenceValue: str = number
+    sequenceValue = number
 
     for i in range(len(number), int(numberLength)):
         sequenceValue = "0" + sequenceValue
