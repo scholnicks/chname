@@ -157,7 +157,7 @@ def mergeFiles(files) -> None:
 
 def calculateExtension(files) -> str:
     """determines a single extension"""
-    extensions: set[str] = set((os.path.splitext(f)[1].lower() for f in files))
+    extensions = set((os.path.splitext(f)[1].lower() for f in files))
     if len(extensions) > 1:
         raise SystemExit("Only one extension allowed. Found: {}".format(", ".join(extensions)))
 
