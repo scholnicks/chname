@@ -2,7 +2,7 @@
 
 [project]
 name = "chname"
-version = "2.1.6"
+version = "3.0.0"
 description = "Renames files in powerful ways"
 authors = [
     {name = "Steve Scholnick",email = "scholnicks@gmail.com"}
@@ -37,3 +37,8 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 chname = "chname.__main__:main"
+
+[dependency-groups]
+dev = [
+    "pytest (>=9.0.2,<10.0.0)"
+]

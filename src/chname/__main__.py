@@ -5,30 +5,26 @@
 # The chname source code is published under a MIT license.
 
 """
-chname: Renames files in powerful ways
-
 Usage:
-    chname [options] [<files>...]
+    chname append [--dry-run --verbose] <suffix> <files>...
+    chname lower [--dry-run --verbose] <files>...
+    chname merge [--directory --dry-run --verbose] <files>...
+    chname order [--dry-run --verbose] <files>...
+    chname random [--dry-run --verbose] <files>...
+    chname remove [--dry-run --verbose] <pattern> <files>...
+    chname prepend [--dry-run --verbose] <prefix> <files>...
+    chname titles [--dry-run --verbose] <input> <files>...
+    chname usage
+    chname (-h | --help)
+    chname --version
 
 Options:
-    -a, --append=<suffix>                      Suffix to be appended
-    -d, --delimiter=<delimiter>                Specifies the delimiter for fixing numerical filenames
     --directory=<directory>                    Destination directory [default: .]
-    -f, --fix=<maximum number of digits>       Fixes numerical file names
-    -h, --help                                 Show this help screen
-    -l, --lower                                Translates the filenames to lowercase
-    --merge                                    Merges the files in order specified on command line
-    -o, --order                                Take any input files and fluxes them in numerical order
-    -p, --prepend=<prefix>                     Prefix to be prepended
-    --random                                   Randomizes the files
-    -r, --remove=<pattern>                     Pattern to be removed, can be a regex
+    --dry-run      Show what would be done, but don't actually do it
+    -h, --help     Show this help screen
     -q, --quiet                                Quiet mode
-    -s, --substitute=<substitution pattern>    Substitutes a pattern (old/new, old can be a regex)
-    -t, --test                                 Test mode (Just prints the operations)
-    --titles=<input file with titles>          Rename the files by names in the specified input file
-    --usage                                    Detailed usage information
     -v, --verbose                              Verbose mode
-    --version                                  Prints the version
+    --version      Prints the version
 """
 
 import os
@@ -36,206 +32,68 @@ import random
 import re
 import sys
 
-from docopt import docopt
+from docopt import docopt, DocoptExit
 
 arguments = {}
 
+OPERATIONS = {
+    "append": lambda: append(),
+    "lower": lambda: lower(),
+    "merge": None,
+    "order": None,
+    "random": None,
+    "remove": lambda: remove(),
+    "prepend": lambda: prepend(),
+    "titles": None,
+    "usage": lambda: usage(),
+}
 
 def main() -> None:
-    """Main Method"""
-    global arguments
-    arguments = docopt(__doc__, version="chname 2.1.6")
+    try:
+        global arguments
+        arguments = docopt(__doc__, version="chname 3.0.0")
+        for operation, func in OPERATIONS.items():
+            if arguments[operation]:
+                if func:
+                    func()
 
-    if arguments["--test"]:
-        arguments["--verbose"] = True
+        sys.exit(0)
+    except (DocoptExit,KeyError):
+        print(__doc__, file=sys.stderr)
+        sys.exit(1)
+    except KeyboardInterrupt:
+        sys.exit(1)
 
-    renameFiles(arguments["<files>"])
+def append() -> None:
+    """Appends a suffix to the specified files"""
+    for filePath in arguments["<files>"]:
+        rename_file(filePath, f"{filePath}{arguments["<suffix>"]}")
 
+def lower() -> None:
+    """Translates filenames to lowercase"""
+    for filePath in arguments["<files>"]:
+        rename_file(filePath,filePath.lower())
 
-def renameFiles(files: list[str]) -> None:
-    """Renames the specified files"""
+def prepend() -> None:
+    for filePath in arguments["<files>"]:
+        rename_file(filePath, f"{arguments["<prefix>"]}{filePath}")
 
-    if arguments["--usage"] or not files:
-        usage()
-
-    if arguments["--verbose"]:
-        arguments["--quiet"] = False
-        print("Renaming: {}\n".format(", ".join(files)))
-
-    if arguments["--random"]:
-        randomizeFiles(files)
-    elif arguments["--merge"]:
-        mergeFiles(files)
-    elif arguments["--titles"]:
-        nameFilesByInputFile(files)
-    elif arguments["--order"]:
-        orderFiles(files)
-    else:
-        for fileName in files:
-            performRenameOperation(fileName)
-
-    sys.exit(0)
-
-
-def nameFilesByInputFile(files) -> None:
-    """Names files by using an input text file"""
-    extension = calculateExtension(files)
-
-    with open(arguments["--titles"], "r") as fp:
-        exportFileNames = [line.strip() for line in fp if line.strip()]
-
-    if len(files) != len(exportFileNames):
-        raise SystemExit(
-            "{} filenames ({}) and files length ({}) do not match".format(
-                arguments["--titles"], len(exportFileNames), len(files)
-            )
-        )
-
-    filenameTemplate = (
-        r"{num:02d} - {filename}{extension}" if len(files) < 100 else r"{num:04d} - {filename}{extension}"
-    )
-    index: int = 1
-    for currentFilePath, newFileName in zip(files, exportFileNames):
-        newFilePath = os.path.join(
-            os.path.dirname(currentFilePath),
-            filenameTemplate.format(num=index, filename=newFileName, extension=extension),
-        )
-        rename_file(currentFilePath, newFilePath)
-        index += 1
-
-
-def orderFiles(files) -> None:
-    """Orders the files"""
-    filenameTemplate = r"{num:02d} - {filename}" if len(files) < 100 else r"{num:04d} - {filename}"
-
-    for index, currentFilePath in enumerate(sorted(files), 1):
-        newFilePath = os.path.join(
-            os.path.dirname(currentFilePath),
-            filenameTemplate.format(num=index, filename=os.path.basename(currentFilePath)),
-        )
-        rename_file(currentFilePath, newFilePath)
-
-
-def randomizeFiles(files) -> None:
-    """randomly shuffles a list of files with the same extension"""
-
-    # determine the extension
-    extension = calculateExtension(files)
-
-    # do the shuffle
-    random.shuffle(files)
-
-    prefix = arguments["--prepend"] if arguments["--prepend"] else "file"
-
-    # rename the files in numeric order
-    for index, filename in enumerate(files, 1):
-        new_file_name = os.path.join(
-            os.path.dirname(filename),
-            "{prefix}_{num:04d}{extension}".format(prefix=prefix, num=index, extension=extension),
-        )
-        rename_file(filename, new_file_name)
-
-
-def mergeFiles(files) -> None:
-    """reorders a set of files in order in a target directory"""
-
-    if not arguments["--directory"]:
-        raise SystemExit("--directory must be set")
-
-    # determine the extension
-    extension = calculateExtension(files)
-
-    prefix = arguments["--prepend"] if arguments["--prepend"] else "file"
-
-    # rename the files in argument specified order
-    for index, filename in enumerate(files, 1):
-        new_file_name = os.path.join(
-            arguments["--directory"], "{prefix}_{num:04d}".format(prefix=prefix, num=index) + extension
-        )
-        rename_file(filename, new_file_name)
-
-
-def calculateExtension(files) -> str:
-    """determines a single extension"""
-    extensions = set((os.path.splitext(f)[1].lower() for f in files))
-    if len(extensions) > 1:
-        raise SystemExit("Only one extension allowed. Found: {}".format(", ".join(extensions)))
-
-    return extensions.pop()
-
-
-def performRenameOperation(fileName) -> None:
-    """Performs a renaming operation on the specified filename"""
-    if not os.path.exists(fileName):
-        if not arguments["--quiet"]:
-            print("{} does not exist, skipping.".format(fileName), file=sys.stderr)
-        return
-
-    newFileName = fileName
-
-    if arguments["--lower"]:
-        newFileName = newFileName.lower()
-
-    if arguments["--append"]:
-        newFileName = newFileName + arguments["--append"]
-
-    if arguments["--prepend"]:
-        newFileName = arguments["--prepend"] + newFileName
-
-    if arguments["--remove"]:
-        newFileName = re.sub(arguments["--remove"], r"", newFileName)
-
-    if arguments["--delimiter"]:
-        if not (arguments["--delimiter"] and arguments["--fix"]):
-            raise SystemExit("--delimiter and --fix are both required")
-        newFileName = fixNumbers(newFileName, arguments["--delimiter"], arguments["--fix"])
-
-    if arguments["--substitute"]:
-        newFileName = substitute(newFileName, arguments["--substitute"])
-
-    if newFileName != fileName:
-        rename_file(fileName, newFileName)
-
+def remove() -> None:
+    pass
 
 def rename_file(oldName, newName) -> None:
     """Performs the actual file rename"""
-    if arguments["--verbose"]:
+    if arguments["--verbose"] or arguments["--dry-run"]:
         print("Renaming {} to {}".format(oldName, newName))
 
-    if not arguments["--test"]:
+    if not arguments["--dry-run"]:
         os.rename(oldName, newName)
-
-
-def substitute(fileName, pattern) -> str:
-    """Performs the pattern substitution"""
-    try:
-        (old, new) = re.match(r"^(.*)/(.*)$", pattern).groups()
-        return re.sub(old, new, fileName)
-    except AttributeError:
-        raise SystemExit("chname: Illegal substitute pattern. Pattern must be old/new")
-
-
-def fixNumbers(fileName, delimiter, numberLength) -> str:
-    """Fixes the numeric part of a filename"""
-    if delimiter not in fileName:
-        return fileName
-
-    (base, extension) = os.path.splitext(fileName)
-    (prefix, number) = base.split(delimiter, 2)
-
-    sequenceValue = number
-
-    for i in range(len(number), int(numberLength)):
-        sequenceValue = "0" + sequenceValue
-
-    return prefix + delimiter + sequenceValue + extension
 
 
 def usage() -> None:
     print(
         __doc__
         + """
-
 Merge
 -----
 To merge files from two different directories into the current directory:
@@ -269,7 +127,6 @@ Randomly names files. --prepend can be use to specify the base filename (default
 
 """
     )
-    sys.exit(0)
 
 
 if __name__ == "__main__":
