@@ -127,7 +127,7 @@ def calculateExtension(files) -> str:
     """determines a single extension"""
     extensions = set((os.path.splitext(f)[1].lower() for f in files))
     if len(extensions) > 1:
-        raise SystemExit("Only one extension allowed. Found: {}".format(", ".join(extensions)))
+        raise SystemExit(f"Only one extension allowed. Found: {", ".join(extensions)}")
 
     return extensions.pop()
 
@@ -140,17 +140,14 @@ def titles() -> None:
         exportFileNames = [line.strip() for line in fp if line.strip()]
 
     if len(arguments["<files>"]) != len(exportFileNames):
-        raise SystemExit(
-            "{} filenames ({}) and files length ({}) do not match".format(
-                arguments["<input>"], len(exportFileNames), len(arguments["<files>"])
-            )
-        )
+        raise SystemExit(f"{arguments["<input>"]} filenames ({len(exportFileNames)}) and files length ({len(arguments["<files>"])}) do not match")
 
     filenameTemplate = (
         r"{num:02d} - {filename}{extension}"
         if len(arguments["<files>"]) < 100
         else r"{num:04d} - {filename}{extension}"
     )
+
     index: int = 1
     for currentFilePath, newFileName in zip(arguments["<files>"], exportFileNames):
         newFilePath = os.path.join(
@@ -164,7 +161,7 @@ def titles() -> None:
 def rename_file(oldName, newName) -> None:
     """Performs the actual file rename"""
     if arguments["--verbose"] or arguments["--dry-run"]:
-        print("Renaming {} to {}".format(oldName, newName))
+        print(f"Renaming {oldName} to {newName}")
 
     if not arguments["--dry-run"]:
         os.rename(oldName, newName)
