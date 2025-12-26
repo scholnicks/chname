@@ -1,7 +1,12 @@
+# vi: set syntax=python ts=4 sw=4 sts=4 et ff=unix ai si :
+#
+# (c) Steven Scholnick <scholnicks@gmail.com>
+# The chname source code is published under a MIT license.
+
 import os
 import pathlib
 
-from chname.__main__ import append, arguments, prepend, lower, substitute, remove
+from chname.__main__ import append, arguments, lower, prepend, remove, substitute
 
 
 def test_append(tmp_path):
@@ -39,7 +44,7 @@ def test_lower(tmp_path):
     arguments["--verbose"] = False
 
     lower()
-    assert (tmp_path / f"{f.name.lower()}").exists()
+    assert (tmp_path / "another.txt").exists()
 
 
 def test_substitute(tmp_path):
@@ -67,7 +72,3 @@ def test_remove(tmp_path):
 
     remove()
     assert (tmp_path / "another.txt").exists()
-
-
-
-

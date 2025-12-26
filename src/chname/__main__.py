@@ -56,8 +56,7 @@ def main() -> None:
         arguments = docopt(__doc__, version="chname 3.0.0")
         for operation, func in OPERATIONS.items():
             if arguments[operation]:
-                if func:
-                    func()
+                func()
 
         sys.exit(0)
     except (DocoptExit, KeyError):
@@ -186,8 +185,7 @@ Results: ./file_0001.txt ./file_0002.txt ./file_0003.txt
 
 where file_0003.txt is d2/file3.txt
 
-All of the files must have the same extension. The default filename format is file_NUMBER.extension. file_ can be changed
-using the --prepend option.
+All of the files must have the same extension. The filename format is file_NUMBER.extension.
 
 
 Order
@@ -200,11 +198,6 @@ chname --order filea.mp3 fileb.mp3
 becomes:
 
 01 - filea.mp3 02 - fileb.mp3
-
-Random
-------
-
-Randomly names files. --prepend can be use to specify the base filename (defaults to file)
 
 """
     )
