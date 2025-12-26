@@ -13,40 +13,42 @@ Usage:
     chname random [--dry-run --verbose] <files>...
     chname remove [--dry-run --verbose] <pattern> <files>...
     chname prepend [--dry-run --verbose] <prefix> <files>...
+    chname substitute [--dry-run --verbose] <old> <new> <files>...
     chname titles [--dry-run --verbose] <input> <files>...
     chname usage
     chname (-h | --help)
     chname --version
 
 Options:
-    --directory=<directory>                    Destination directory [default: .]
-    --dry-run      Show what would be done, but don't actually do it
-    -h, --help     Show this help screen
-    -q, --quiet                                Quiet mode
-    -v, --verbose                              Verbose mode
-    --version      Prints the version
+    --directory=<directory>    Destination directory [default: .]
+    --dry-run                  Show what would be done, but don't actually do it
+    -h, --help                 Show this help screen
+    -v, --verbose              Verbose mode
+    --version                  Prints the version
 """
 
 import os
 import random
 import re
 import sys
+from pathlib import Path
 
-from docopt import docopt, DocoptExit
+from docopt import DocoptExit, docopt
 
 arguments = {}
 
 OPERATIONS = {
     "append": lambda: append(),
     "lower": lambda: lower(),
-    "merge": None,
-    "order": None,
-    "random": None,
+    "merge": lambda: merge(),
+    "order": lambda: orders(),
     "remove": lambda: remove(),
     "prepend": lambda: prepend(),
-    "titles": None,
+    "substitute": lambda: substitute(),
+    "titles": lambda: titles(),
     "usage": lambda: usage(),
 }
+
 
 def main() -> None:
     try:
@@ -58,28 +60,107 @@ def main() -> None:
                     func()
 
         sys.exit(0)
-    except (DocoptExit,KeyError):
+    except (DocoptExit, KeyError):
         print(__doc__, file=sys.stderr)
         sys.exit(1)
     except KeyboardInterrupt:
         sys.exit(1)
+
+
+def substitute() -> None:
+    """Substitutes a pattern in the specified files"""
+    for filePath in arguments["<files>"]:
+        rename_file(filePath, filePath.replace(arguments["<old>"], arguments["<new>"]))
+
 
 def append() -> None:
     """Appends a suffix to the specified files"""
     for filePath in arguments["<files>"]:
         rename_file(filePath, f"{filePath}{arguments["<suffix>"]}")
 
+
 def lower() -> None:
     """Translates filenames to lowercase"""
     for filePath in arguments["<files>"]:
-        rename_file(filePath,filePath.lower())
+        rename_file(filePath, filePath.lower())
+
 
 def prepend() -> None:
+    """To prepends a prefix to the specified files"""
     for filePath in arguments["<files>"]:
-        rename_file(filePath, f"{arguments["<prefix>"]}{filePath}")
+        p = Path(filePath)
+        rename_file(filePath, str(p.parent / f"{arguments['<prefix>']}{p.name}"))
+
 
 def remove() -> None:
-    pass
+    """Removes a pattern from the specified files"""
+    for filePath in arguments["<files>"]:
+        rename_file(filePath, re.sub(arguments["<pattern>"], r"", filePath))
+
+
+def orders() -> None:
+    """Orders the files"""
+    filenameTemplate = r"{num:02d} - {filename}" if len(arguments["<files>"]) < 100 else r"{num:04d} - {filename}"
+
+    for index, currentFilePath in enumerate(sorted(arguments), 1):
+        newFilePath = os.path.join(
+            os.path.dirname(currentFilePath),
+            filenameTemplate.format(num=index, filename=os.path.basename(currentFilePath)),
+        )
+        rename_file(currentFilePath, newFilePath)
+
+
+def merge() -> None:
+    """reorders a set of files in order in a target directory"""
+    if not arguments["--directory"]:
+        raise SystemExit("--directory must be set")
+
+    # determine the extension
+    extension = calculateExtension(arguments["<files>"])
+
+    # rename the files in argument specified order
+    for index, filename in enumerate(arguments["<files>"], 1):
+        new_file_name = os.path.join(arguments["--directory"], f"file_{index:04d}" + extension)
+        rename_file(filename, new_file_name)
+
+
+def calculateExtension(files) -> str:
+    """determines a single extension"""
+    extensions = set((os.path.splitext(f)[1].lower() for f in files))
+    if len(extensions) > 1:
+        raise SystemExit("Only one extension allowed. Found: {}".format(", ".join(extensions)))
+
+    return extensions.pop()
+
+
+def titles() -> None:
+    """Names files by using an input text file"""
+    extension = calculateExtension(arguments["<files>"])
+
+    with open(arguments["<input>"], "r") as fp:
+        exportFileNames = [line.strip() for line in fp if line.strip()]
+
+    if len(arguments["<files>"]) != len(exportFileNames):
+        raise SystemExit(
+            "{} filenames ({}) and files length ({}) do not match".format(
+                arguments["<input>"], len(exportFileNames), len(arguments["<files>"])
+            )
+        )
+
+    filenameTemplate = (
+        r"{num:02d} - {filename}{extension}"
+        if len(arguments["<files>"]) < 100
+        else r"{num:04d} - {filename}{extension}"
+    )
+    index: int = 1
+    for currentFilePath, newFileName in zip(arguments["<files>"], exportFileNames):
+        newFilePath = os.path.join(
+            os.path.dirname(currentFilePath),
+            filenameTemplate.format(num=index, filename=newFileName, extension=extension),
+        )
+        rename_file(currentFilePath, newFilePath)
+        index += 1
+
 
 def rename_file(oldName, newName) -> None:
     """Performs the actual file rename"""
