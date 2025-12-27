@@ -6,7 +6,9 @@
 import os
 import pathlib
 
-from chname.__main__ import append, arguments, lower, prepend, remove, substitute
+import pytest
+
+from chname.__main__ import append, arguments, calculateExtension, lower, prepend, remove, substitute
 
 
 def test_append(tmp_path):
@@ -72,3 +74,27 @@ def test_remove(tmp_path):
 
     remove()
     assert (tmp_path / "another.txt").exists()
+
+
+def test_calculate_extension_single_extension():
+    files = ["one.txt", "two.txt"]
+    assert calculateExtension(files) == ".txt"
+
+
+def test_calculate_extension_case_insensitive():
+    files = ["ONE.TXT", "two.Txt", "three.txt"]
+    assert calculateExtension(files) == ".txt"
+
+
+def test_calculate_extension_no_extension_returns_empty_string():
+    files = ["one", "two", "three"]
+    assert calculateExtension(files) == ""
+
+
+def test_calculate_extension_multiple_extensions_raises_systemexit():
+    files = ["one.txt", "two.mp3"]
+    with pytest.raises(SystemExit) as excinfo:
+        calculateExtension(files)
+    msg = str(excinfo.value)
+    assert "Only one extension allowed" in msg
+    assert ".txt" in msg and ".mp3" in msg

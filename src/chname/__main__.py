@@ -8,7 +8,7 @@
 Usage:
     chname append [--dry-run --quiet --verbose] <suffix> <files>...
     chname lower [--dry-run --quiet --verbose] <files>...
-    chname merge [--directory --dry-run --quiet --verbose] <files>...
+    chname merge [--dry-run --quiet --verbose] <directory> <files>...
     chname order [--dry-run --quiet --verbose] <files>...
     chname remove [--dry-run --quiet --verbose] <pattern> <files>...
     chname prepend [--dry-run --quiet --verbose] <prefix> <files>...
@@ -19,7 +19,6 @@ Usage:
     chname --version
 
 Options:
-    --directory=<directory>    Destination directory [default: .]
     --dry-run                  Show what would be done, but don't actually do it
     -h, --help                 Show this help screen
     -q, --quiet                Quiet mode
@@ -41,7 +40,7 @@ OPERATIONS = {
     "append": lambda: append(),
     "lower": lambda: lower(),
     "merge": lambda: merge(),
-    "order": lambda: orders(),
+    "order": lambda: order(),
     "remove": lambda: remove(),
     "prepend": lambda: prepend(),
     "substitute": lambda: substitute(),
@@ -51,9 +50,10 @@ OPERATIONS = {
 
 
 def main() -> None:
+    """Main entry point for chname utility"""
     try:
         global arguments
-        arguments = docopt(__doc__, version="chname 3.0.1")
+        arguments = docopt(__doc__, version="chname 3.0.2")
         for operation, func in OPERATIONS.items():
             if arguments[operation]:
                 func()
@@ -97,7 +97,7 @@ def remove() -> None:
         rename_file(filePath, re.sub(arguments["<pattern>"], r"", filePath))
 
 
-def orders() -> None:
+def order() -> None:
     """Orders the files"""
     filenameTemplate = r"{num:02d} - {filename}" if len(arguments["<files>"]) < 100 else r"{num:04d} - {filename}"
 
@@ -110,16 +110,13 @@ def orders() -> None:
 
 
 def merge() -> None:
-    """reorders a set of files in order in a target directory"""
-    if not arguments["--directory"]:
-        raise SystemExit("--directory must be set")
-
+    """Merges files into a single directory with standardized names"""
     # determine the extension
     extension = calculateExtension(arguments["<files>"])
 
     # rename the files in argument specified order
     for index, filename in enumerate(arguments["<files>"], 1):
-        new_file_name = os.path.join(arguments["--directory"], f"file_{index:04d}" + extension)
+        new_file_name = os.path.join(arguments["<directory>"], f"file_{index:04d}" + extension)
         rename_file(filename, new_file_name)
 
 
@@ -144,7 +141,9 @@ def titles() -> None:
         exportFileNames = [line.strip() for line in fp if line.strip()]
 
     if len(arguments["<files>"]) != len(exportFileNames):
-        raise SystemExit(f"{arguments["<input>"]} filenames ({len(exportFileNames)}) and files length ({len(arguments["<files>"])}) do not match")
+        raise SystemExit(
+            f"{arguments["<input>"]} filenames ({len(exportFileNames)}) and files length ({len(arguments["<files>"])}) do not match"
+        )
 
     filenameTemplate = (
         r"{num:02d} - {filename}{extension}"
