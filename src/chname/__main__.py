@@ -6,15 +6,14 @@
 
 """
 Usage:
-    chname append [--dry-run --verbose] <suffix> <files>...
-    chname lower [--dry-run --verbose] <files>...
-    chname merge [--directory --dry-run --verbose] <files>...
-    chname order [--dry-run --verbose] <files>...
-    chname random [--dry-run --verbose] <files>...
-    chname remove [--dry-run --verbose] <pattern> <files>...
-    chname prepend [--dry-run --verbose] <prefix> <files>...
-    chname substitute [--dry-run --verbose] <old> <new> <files>...
-    chname titles [--dry-run --verbose] <input> <files>...
+    chname append [--dry-run --quiet --verbose] <suffix> <files>...
+    chname lower [--dry-run --quiet --verbose] <files>...
+    chname merge [--directory --dry-run --quiet --verbose] <files>...
+    chname order [--dry-run --quiet --verbose] <files>...
+    chname remove [--dry-run --quiet --verbose] <pattern> <files>...
+    chname prepend [--dry-run --quiet --verbose] <prefix> <files>...
+    chname substitute [--dry-run --quiet --verbose] <old> <new> <files>...
+    chname titles [--dry-run --quiet --verbose] <input> <files>...
     chname usage
     chname (-h | --help)
     chname --version
@@ -23,6 +22,7 @@ Options:
     --directory=<directory>    Destination directory [default: .]
     --dry-run                  Show what would be done, but don't actually do it
     -h, --help                 Show this help screen
+    -q, --quiet                Quiet mode
     -v, --verbose              Verbose mode
     --version                  Prints the version
 """
@@ -53,7 +53,7 @@ OPERATIONS = {
 def main() -> None:
     try:
         global arguments
-        arguments = docopt(__doc__, version="chname 3.0.0")
+        arguments = docopt(__doc__, version="chname 3.0.1")
         for operation, func in OPERATIONS.items():
             if arguments[operation]:
                 func()
@@ -136,7 +136,11 @@ def titles() -> None:
     """Names files by using an input text file"""
     extension = calculateExtension(arguments["<files>"])
 
-    with open(arguments["<input>"], "r") as fp:
+    titlesFilePath = arguments["<input>"]
+    if not titlesFilePath.exists(titlesFilePath):
+        raise SystemExit(f"Titles file {titlesFilePath} does not exist")
+
+    with titlesFilePath.open("r") as fp:
         exportFileNames = [line.strip() for line in fp if line.strip()]
 
     if len(arguments["<files>"]) != len(exportFileNames):
@@ -162,6 +166,11 @@ def rename_file(oldName, newName) -> None:
     """Performs the actual file rename"""
     if arguments["--verbose"] or arguments["--dry-run"]:
         print(f"Renaming {oldName} to {newName}")
+
+    if not Path(oldName).exists():
+        if not arguments["--quiet"]:
+            print(f"File {oldName} does not exist", file=sys.stderr)
+        return
 
     if not arguments["--dry-run"]:
         os.rename(oldName, newName)
