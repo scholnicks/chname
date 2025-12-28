@@ -53,7 +53,7 @@ def main() -> None:
     """Main entry point for chname utility"""
     try:
         global arguments
-        arguments = docopt(__doc__, version="chname 3.0.2")
+        arguments = docopt(__doc__, version="chname 3.0.3")
         for operation, func in OPERATIONS.items():
             if arguments[operation]:
                 func()
@@ -101,7 +101,7 @@ def order() -> None:
     """Orders the files"""
     filenameTemplate = r"{num:02d} - {filename}" if len(arguments["<files>"]) < 100 else r"{num:04d} - {filename}"
 
-    for index, currentFilePath in enumerate(sorted(arguments), 1):
+    for index, currentFilePath in enumerate(sorted(arguments["<files>"]), 1):
         newFilePath = os.path.join(
             os.path.dirname(currentFilePath),
             filenameTemplate.format(num=index, filename=os.path.basename(currentFilePath)),

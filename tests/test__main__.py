@@ -8,7 +8,7 @@ import pathlib
 
 import pytest
 
-from chname.__main__ import append, arguments, calculateExtension, lower, prepend, remove, substitute
+from chname.__main__ import append, arguments, calculateExtension, lower, order, prepend, remove, substitute
 
 
 def test_append(tmp_path):
@@ -98,3 +98,22 @@ def test_calculate_extension_multiple_extensions_raises_systemexit():
     msg = str(excinfo.value)
     assert "Only one extension allowed" in msg
     assert ".txt" in msg and ".mp3" in msg
+
+
+def test_order(tmp_path):
+    a = tmp_path / "a.txt"
+    b = tmp_path / "b.txt"
+    a.write_text("data")
+    b.write_text("data")
+
+    arguments.clear()
+    # provide in reverse order to ensure sorting is used
+    arguments["<files>"] = [str(b), str(a)]
+    arguments["--dry-run"] = False
+    arguments["--verbose"] = False
+    arguments["--quiet"] = False
+
+    order()
+
+    assert (tmp_path / "01 - a.txt").exists()
+    assert (tmp_path / "02 - b.txt").exists()

@@ -2,7 +2,7 @@
 
 [project]
 name = "chname"
-version = "3.0.2"
+version = "3.0.3"
 description = "Renames files in powerful ways"
 authors = [
     {name = "Steve Scholnick",email = "scholnicks@gmail.com"}
@@ -32,7 +32,7 @@ Issues = "https://github.com/scholnicks/chname/issues"
 packages = [{include = "chname", from = "src"}]
 
 [build-system]
-requires = ["poetry-core>=2.0.0,<3.0.2"]
+requires = ["poetry-core>=2.0.0,<3.0.3"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
