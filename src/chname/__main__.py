@@ -5,6 +5,8 @@
 # The chname source code is published under a MIT license.
 
 """
+chname: renames files in powerful ways.
+
 Usage:
     chname append [--dry-run --quiet --verbose] <suffix> <files>...
     chname lower [--dry-run --quiet --verbose] <files>...

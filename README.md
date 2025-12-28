@@ -4,27 +4,27 @@ chname renames files in powerful ways.
 
 ```
 Usage:
-    chname [options] [<files>...]
+chname: renames files in powerful ways.
+
+Usage:
+    chname append [--dry-run --quiet --verbose] <suffix> <files>...
+    chname lower [--dry-run --quiet --verbose] <files>...
+    chname merge [--dry-run --quiet --verbose] <directory> <files>...
+    chname order [--dry-run --quiet --verbose] <files>...
+    chname remove [--dry-run --quiet --verbose] <pattern> <files>...
+    chname prepend [--dry-run --quiet --verbose] <prefix> <files>...
+    chname substitute [--dry-run --quiet --verbose] <old> <new> <files>...
+    chname titles [--dry-run --quiet --verbose] <input> <files>...
+    chname usage
+    chname (-h | --help)
+    chname --version
 
 Options:
-    -a, --append=<suffix>                      Suffix to be appended
-    -d, --delimiter=<delimiter>                Specifies the delimiter for fixing numerical filenames
-    --directory=<directory>                    Destination directory [default: .]
-    -f, --fix=<maximum number of digits>       Fixes numerical file names
-    -h, --help                                 Show this help screen
-    -l, --lower                                Translates the filenames to lowercase
-    --merge                                    Merges the files in order specified on command line
-    -o, --order                                Take any input files and renames them in numerical order
-    -p, --prepend=<prefix>                     Prefix to be prepended
-    --random                                   Randomizes the files
-    -r, --remove=<pattern>                     Pattern to be removed, can be a regex
-    -q, --quiet                                Quiet mode
-    -s, --substitute=<substitution pattern>    Substitutes a pattern (old/new, old can be a regex)
-    -t, --test                                 Test mode (Just prints the rename operations)
-    --titles=<input file with titles>          Rename the files by names in the specified input file
-    --usage                                    Detailed usage information
-    -v, --verbose                              Verbose mode
-    --version                                  Prints the version
+    --dry-run                  Show what would be done, but don't actually do it
+    -h, --help                 Show this help screen
+    -q, --quiet                Quiet mode
+    -v, --verbose              Verbose mode
+    --version                  Prints the version
 ```
 
 ## Installation
