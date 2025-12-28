@@ -4,9 +4,6 @@ chname renames files in powerful ways.
 
 ```
 Usage:
-chname: renames files in powerful ways.
-
-Usage:
     chname append [--dry-run --quiet --verbose] <suffix> <files>...
     chname lower [--dry-run --quiet --verbose] <files>...
     chname merge [--dry-run --quiet --verbose] <directory> <files>...
