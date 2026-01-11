@@ -2,7 +2,7 @@
 
 [project]
 name = "chname"
-version = "3.0.4"
+version = "3.0.5"
 description = "Renames files in powerful ways"
 authors = [
     {name = "Steve Scholnick",email = "scholnicks@gmail.com"}

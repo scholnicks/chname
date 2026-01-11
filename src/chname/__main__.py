@@ -54,7 +54,7 @@ def main() -> None:
     """Main entry point for chname utility"""
     try:
         global arguments
-        arguments = docopt(__doc__, version="chname 3.0.4")
+        arguments = docopt(__doc__, version="chname 3.0.5")
         for operation, func in OPERATIONS.items():
             if arguments[operation]:
                 func()
@@ -135,7 +135,7 @@ def titles() -> None:
     extension = calculateExtension(arguments["<files>"])
 
     titlesFilePath = Path(arguments["<input>"])
-    if not titlesFilePath.exists(titlesFilePath):
+    if not titlesFilePath.exists():
         raise SystemExit(f"Titles file {titlesFilePath} does not exist")
 
     with titlesFilePath.open("r") as fp:
