@@ -54,7 +54,7 @@ def main() -> None:
     """Main entry point for chname utility"""
     try:
         global arguments
-        arguments = docopt(__doc__, version="chname 3.0.5")
+        arguments = docopt(__doc__, version="chname 3.0.6")
         for operation, func in OPERATIONS.items():
             if arguments[operation]:
                 func()
@@ -184,7 +184,7 @@ Merge
 -----
 To merge files from two different directories into the current directory:
 
-chname --merge d1/* d2/*
+chname merge . d1/* d2/*
 
 Input Files: d1/file1.txt d1/file2.txt d2/file1.txt
 Results: ./file_0001.txt ./file_0002.txt ./file_0003.txt
@@ -199,7 +199,7 @@ Order
 
 Adds a numerical prefix to sorted input files. Example:
 
-chname --order filea.mp3 fileb.mp3
+chname order filea.mp3 fileb.mp3
 
 becomes:
 
