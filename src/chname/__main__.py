@@ -54,7 +54,7 @@ def main() -> None:
     """Main entry point for chname utility"""
     try:
         global arguments
-        arguments = docopt(__doc__, version="chname 3.0.6")
+        arguments = docopt(__doc__, version="chname 3.0.7")
         for operation, func in OPERATIONS.items():
             if arguments[operation]:
                 func()
@@ -114,6 +114,10 @@ def merge() -> None:
     """Merges files into a single directory with standardized names"""
     # determine the extension
     extension = calculateExtension(arguments["<files>"])
+
+    directory = Path(arguments["<directory>"])
+    if not directory.exists() and not directory.is_dir():
+        raise SystemExit(f"Directory {directory} does not exist or is not a directory")
 
     # rename the files in argument specified order
     for index, filename in enumerate(arguments["<files>"], 1):
