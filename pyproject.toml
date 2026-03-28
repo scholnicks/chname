@@ -1,18 +1,19 @@
-# vi: set syntax=toml ts=4 sw=4 sts=4 et ff=unix ai si :
-
 [project]
 name = "chname"
 version = "3.0.7"
 description = "Renames files in powerful ways"
-authors = [
-    {name = "Steve Scholnick",email = "scholnicks@gmail.com"}
-]
-readme = "README.md"
-license="MIT"
-license-files=["LICENSE"]
+authors = [{ name = "Steve Scholnick", email = "scholnicks@gmail.com" }]
 requires-python = ">=3.13"
-dependencies = [
-    "docopt-ng (>=0.9.0,<0.10.0)"
+readme = "README.md"
+license = "MIT"
+keywords = [
+    "rename",
+    "file",
+    "batch",
+    "bulk",
+    "utility",
+    "command-line",
+    "cli",
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -20,24 +21,31 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
     "License :: OSI Approved :: MIT License",
-    "Topic :: Utilities"
+    "Topic :: Utilities",
 ]
-keywords = ["rename", "file", "batch", "bulk", "utility", "command-line", "cli"]
+dependencies = ["docopt-ng (>=0.9.0,<0.10.0)"]
+license-files = ["LICENSE"]
 
 [project.urls]
-homepage="https://pypi.org/project/chname/"
-repository="https://github.com/scholnicks/chname/"
+homepage = "https://pypi.org/project/chname/"
+repository = "https://github.com/scholnicks/chname/"
 Issues = "https://github.com/scholnicks/chname/issues"
 
-[tool.poetry]
-packages = [{include = "chname", from = "src"}]
+[project.scripts]
+chname = "chname.__main__:main"
+
+[tool.hatch.build.targets.sdist]
+include = ["src/chname"]
+
+[tool.hatch.build.targets.wheel]
+include = ["src/chname"]
+
+[tool.hatch.build.targets.wheel.sources]
+"src/chname" = "chname"
 
 [build-system]
-requires = ["poetry-core>=2.0.0,<3.0.3"]
-build-backend = "poetry.core.masonry.api"
-
-[tool.poetry.scripts]
-chname = "chname.__main__:main"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [dependency-groups]
 dev = [
