@@ -27,7 +27,7 @@ Options:
 ## Installation
 
 ```bash
-pip install chname
+pipx install chname
 ```
 
 ## License
