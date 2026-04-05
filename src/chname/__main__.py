@@ -54,7 +54,7 @@ def main() -> None:
     """Main entry point for chname utility"""
     try:
         global arguments
-        arguments = docopt(__doc__, version="chname 3.0.7")
+        arguments = docopt(__doc__, version="chname 3.0.8")
         for operation, func in OPERATIONS.items():
             if arguments[operation]:
                 func()
